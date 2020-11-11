@@ -5,6 +5,7 @@ This allows you to take a specific keyboard, rip out all the unused keys and use
 
 ## Dependencies
 xkb2midi uses cmake for building:
+
     - boost (program_options)
     - X11 with Xkb
     - jack
@@ -22,12 +23,13 @@ $ make
 ```
 Allowed options:
   -h [ --help ]                         produce help message
-  -c [ --config ] arg (=/home/andre/.xkb2midi.cfg)
-                                        Set json configuration file for keycode
-                                        to note mappings.
-  -d [ --device ] arg (=256)            Set xkb device index. Default value is 
-                                        the core keyboard, which probably 
-                                        should be avoided.
+  -c [ --config ] arg (=~/.config/xkb2midi.cfg)
+                                        Set configuration file for keycode to 
+                                        note mappings.
+  -d [ --device ] arg (=256)            Set xkb device index (c.f. `xinput 
+                                        list`). Default value is the core 
+                                        keyboard, which probably should be 
+                                        avoided.
   -u [ --unmap ]                        Prevent mapped keys from generating key
                                         events as usual.
 
@@ -35,10 +37,10 @@ This program reads keycodes and midi note numbers from a config file
 and reconfigures a specific keyboard using the XKeyboard Extension.
 
 The program then listens for keyboard events on the mapped keys,
-translating keystrokes to midi outputted over a jack connection (otg).
+translating keystrokes to midi key press/release events outputted over
+a jack connection. The program doesn't have to be in focus to work.
 
-Please be aware that this can completely lock up your input handling,
-so don't use it on your core keyboard. Use the '--device' option to
-specify a keyboard device index, as given from the output of 'xinput list'.
+Please be aware that this program can potentially lock up your input handling,
+so don't use it on your core keyboard(!)
 
 ```

@@ -37,11 +37,11 @@ int main (int argc, char ** argv)
 	desc.add_options()
 		("help,h", "produce help message")
 		("config,c",
-			po::value<std::string>(&cfgFilename)->default_value(homepath+"/.xkb2midi.cfg"),
-			"Set json configuration file for keycode to note mappings.")
+			po::value<std::string>(&cfgFilename)->default_value(homepath + "/.config/xkb2midi.cfg"),
+			"Set configuration file for keycode to note mappings.")
 		("device,d",
 			po::value<int>(&device)->default_value(XkbUseCoreKbd),
-			"Set xkb device index. Default value is the core keyboard, which"
+			"Set xkb device index (c.f. `xinput list`). Default value is the core keyboard, which"
 			" probably should be avoided.")
 		("unmap,u", "Prevent mapped keys from generating key events as usual.")
 	;
@@ -56,23 +56,29 @@ int main (int argc, char ** argv)
 			"This program reads keycodes and midi note numbers from a config file\n"
 			"and reconfigures a specific keyboard using the XKeyboard Extension.\n"
 			"\nThe program then listens for keyboard events on the mapped keys,\n"
-			"translating keystrokes to midi outputted over a jack connection (otg).\n"
-			"\nPlease be aware that this can completely lock up your input handling,\n"
-			"so don't use it on your core keyboard. Use the '--device' option to\n"
-			"specify a keyboard device index, as given from the output of 'xinput list'.\n"
-			<< std::endl;
+			"translating keystrokes to midi key press/release events outputted over\n"
+                        "a jack connection. The program doesn't have to be in focus to work.\n"
+			"\nPlease be aware that this program can potentially lock up your input handling,\n"
+			"so don't use it on your core keyboard(!)\n" << std::endl;
 		return 1;
 	}
 
 	bool generateEvents = !vm.count("unmap");
 
-	std::map<KeyCode,char> kcNoteMap = parse_config(cfgFilename);
+        std::map<KeyCode,char> kcNoteMap;
+        try{
+            std::map<KeyCode,char> kcNoteMap = parse_config(cfgFilename);
+        }catch(std::invalid_argument& e)
+        {
+            std::cerr << "Unable to parse config file: '" << cfgFilename << "' - File does not exist." << std::endl;
+            return 1;
+        }
 
 	if(device == XkbUseCoreKbd)
 	{
-		std::cout << "Are you sure you want to use the Core keyboard? This might make your system inoperable. (Y/n) " << std::flush;
+		std::cout << "Are you sure you want to use the Core keyboard? This might make your system inoperable. (y/N) " << std::flush;
 		char c;
-		std::cin >> c;
+		std::cin >> std::noskipws >> c;
 		if(c!='y' && c!='Y') {
 			std::cout << "Exiting ..." << std::endl;
 			exit(1);
