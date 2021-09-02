@@ -1,7 +1,7 @@
 # xkb2midi
 xkb (X11) to JACK midi mapping utility that allows you to remap a standard X keyboard device to output specific midi notes over JACK.
 
-This allows you to take a specific keyboard, rip out all the unused keys and use it as a pedalboard. Perfect for e.g. controlling a midi application like sooperlooper. 
+This allows you to take a specific keyboard, rip out all the unused keys and use it as a pedalboard. If the correct device id of the pedalkoard keyboard is supplied to the program, your ordinary keyboard can be kept as a normal, functioning keyboard while the one controlled by this program can be made to only output midi notes. Perfect for e.g. controlling a midi application like sooperlooper. 
 
 ## Dependencies
 xkb2midi uses cmake for building:
